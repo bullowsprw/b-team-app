@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Calendar, LifeBuoy, Megaphone, Users, ShieldCheck, Settings } from "lucide-react";
+import { FileText, Calendar, LifeBuoy, Megaphone, Users, ShieldCheck, Settings, Ticket } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
@@ -73,6 +73,16 @@ export default function DashboardPage() {
                                             <Settings className="h-6 w-6 text-red-600" />
                                         </div>
                                         <span className="font-bold text-red-900">Manage Employees</span>
+                                    </CardContent>
+                                </Card>
+                            </Link>
+                            <Link href="/dashboard/admin/tickets" className="block h-full">
+                                <Card className="h-full hover:shadow-md transition-shadow cursor-pointer border-2 border-dashed border-orange-200 bg-orange-50/30 shadow-none">
+                                    <CardContent className="flex flex-col items-center justify-center p-6 text-center h-full space-y-3">
+                                        <div className="p-3 rounded-full bg-orange-100">
+                                            <Ticket className="h-6 w-6 text-orange-600" />
+                                        </div>
+                                        <span className="font-bold text-orange-900">Manage Tickets</span>
                                     </CardContent>
                                 </Card>
                             </Link>

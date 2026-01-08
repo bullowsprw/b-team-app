@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { db } from "@/db";
 import { tickets, users } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
+import { sendTicketNotification } from "@/lib/email";
 
 export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
@@ -34,16 +35,15 @@ export async function POST(req: Request) {
             attachmentUrl: "",
         });
 
-        // Simulate Email Notification
-        console.log(`
-      [EMAIL SIMULATION] 
-      To: admin@bullows.com, management@bullows.com
-      Subject: New Support Ticket: ${subject}
-      From: ${session.user.name} (${session.user.email})
-      Category: ${category}
-      Description: ${description}
-      ---------------------------------------------------
-      `);
+        // Send email notification
+        await sendTicketNotification({
+            ticketId: newTicketId,
+            subject,
+            category,
+            description,
+            employeeName: session.user.name || "Employee",
+            employeeEmail: session.user.email,
+        });
 
         return NextResponse.json({ success: true, id: newTicketId });
 
