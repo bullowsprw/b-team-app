@@ -86,13 +86,13 @@ export default function SupportPage() {
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-50 p-6">
+        <div className="flex flex-col min-h-[calc(100vh-64px)] bg-gray-50 p-6">
             <div className="mb-6">
-                <Link href="/dashboard" className="text-sm text-gray-500 hover:underline mb-2 block">
+                <Link href="/dashboard" className="inline-flex items-center text-sm font-bold text-primary hover:text-primary/80 transition-colors mb-4">
                     &larr; Back to Dashboard
                 </Link>
-                <h1 className="text-3xl font-bold text-gray-900">Support Helpdesk</h1>
-                <p className="text-gray-500">Raise queries or report issues.</p>
+                <h1 className="text-4xl font-black text-gray-900 tracking-tight">Support Helpdesk</h1>
+                <p className="text-gray-500 text-lg">Raise queries or report issues quickly.</p>
             </div>
 
             <Card className="max-w-4xl mx-auto w-full">

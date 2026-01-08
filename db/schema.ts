@@ -20,6 +20,9 @@ export const users = pgTable("user", {
     designation: text("designation"),
     role: text("role").$type<"admin" | "employee">().default("employee"),
     mobile: text("mobile"),
+    whatsapp: text("whatsapp"),
+    department: text("department"),
+    location: text("location"),
     dob: date("dob"),
     doj: date("doj"),
 });

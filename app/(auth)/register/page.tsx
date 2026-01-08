@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShieldCheck } from "lucide-react";
-import Image from "next/image";
+import { Logo } from "@/components/logo";
 
 export default function RegisterPage() {
     const [isLoading, setIsLoading] = useState(false);
@@ -35,17 +35,8 @@ export default function RegisterPage() {
 
     return (
         <div className="flex flex-col items-center">
-            <div className="mb-8 flex flex-col items-center">
-                <div className="relative h-20 w-auto">
-                    <Image
-                        src="/logo.jpeg"
-                        alt="Bullows Logo"
-                        width={200}
-                        height={80}
-                        className="object-contain"
-                        priority
-                    />
-                </div>
+            <div className="mb-12 flex flex-col items-center">
+                <Logo width={240} height={80} priority />
             </div>
 
             <Card className="w-full">

@@ -29,12 +29,12 @@ export default function HolidaysPage() {
     }, []);
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-50 p-6">
+        <div className="flex flex-col min-h-[calc(100vh-64px)] bg-gray-50 p-6">
             <div className="mb-6">
-                <Link href="/dashboard" className="text-sm text-gray-500 hover:underline mb-2 block">
+                <Link href="/dashboard" className="inline-flex items-center text-sm font-bold text-primary hover:text-primary/80 transition-colors mb-4">
                     &larr; Back to Dashboard
                 </Link>
-                <h1 className="text-3xl font-bold text-gray-900">Holiday List 2024</h1>
+                <h1 className="text-4xl font-black text-gray-900 tracking-tight">Holiday List 2024</h1>
             </div>
 
             {loading ? (

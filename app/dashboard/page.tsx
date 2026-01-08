@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Calendar, LifeBuoy, Megaphone, Users } from "lucide-react";
+import { FileText, Calendar, LifeBuoy, Megaphone, Users, ShieldCheck, Settings } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
@@ -48,25 +48,7 @@ export default function DashboardPage() {
     ];
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-50">
-            {/* Header */}
-            <header className="bg-white border-b px-6 py-4 flex items-center justify-between sticky top-0 z-10">
-                <div className="flex items-center gap-2">
-                    <div className="relative h-8 w-8">
-                        <Image
-                            src="/logo.png"
-                            alt="Bullows Logo"
-                            fill
-                            className="object-contain"
-                        />
-                    </div>
-                    <h1 className="text-xl font-bold text-primary">B Team</h1>
-                </div>
-                <div className="text-sm font-medium text-gray-600">
-                    {session?.user?.name || "Employee"}
-                </div>
-            </header>
-
+        <div className="flex flex-col min-h-[calc(100vh-64px)] bg-gray-50">
             {/* Main Content */}
             <main className="flex-1 p-6">
                 <div className="mb-6">
@@ -76,11 +58,33 @@ export default function DashboardPage() {
                     <p className="text-gray-500">Here is what's happening today.</p>
                 </div>
 
+                {/* Admin Section (Only for Admins) */}
+                {(session?.user as any)?.role === "admin" && (
+                    <div className="mb-8">
+                        <div className="flex items-center gap-2 mb-4">
+                            <ShieldCheck className="h-6 w-6 text-red-600" />
+                            <h3 className="text-xl font-bold text-gray-800">Administrator Tools</h3>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                            <Link href="/dashboard/admin/employees" className="block h-full">
+                                <Card className="h-full hover:shadow-md transition-shadow cursor-pointer border-2 border-dashed border-red-200 bg-red-50/30 shadow-none">
+                                    <CardContent className="flex flex-col items-center justify-center p-6 text-center h-full space-y-3">
+                                        <div className="p-3 rounded-full bg-red-100">
+                                            <Settings className="h-6 w-6 text-red-600" />
+                                        </div>
+                                        <span className="font-bold text-red-900">Manage Employees</span>
+                                    </CardContent>
+                                </Card>
+                            </Link>
+                        </div>
+                    </div>
+                )}
+
                 {/* Feature Grid */}
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                     {features.map((feature) => (
                         <Link key={feature.title} href={feature.href} className="block h-full">
-                            <Card className="h-full hover:shadow-md transition-shadow cursor-pointer border-none shadow-sm">
+                            <Card className="h-full hover:shadow-md transition-shadow cursor-pointer border-none shadow-sm bg-white">
                                 <CardContent className="flex flex-col items-center justify-center p-6 text-center h-full space-y-4">
                                     <div className={`p-4 rounded-full ${feature.bgColor}`}>
                                         <feature.icon className={`h-8 w-8 ${feature.color}`} />

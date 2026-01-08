@@ -1,8 +1,7 @@
-
 import { db, client } from '@/db';
 import { policies, holidays, users } from '@/db/schema';
-import { mockPolicies, mockHolidays, mockEmployees } from '@/db/mock-data';
-import { hash } from 'bcryptjs'; // We might need to install bcryptjs if not present, or use a simple mock hash for now
+import { mockPolicies, mockHolidays, mockEmployees, mockAdmins } from '@/db/mock-data';
+import bcrypt from 'bcryptjs';
 
 async function seed() {
     console.log('🌱 Seeding database...');
@@ -31,15 +30,25 @@ async function seed() {
             }).onConflictDoNothing();
         }
 
-        // 3. Seed Users (Employees)
-        console.log('... Seeding Employees');
-        // We need to match the mockEmployees structure to the users schema
-        // mockEmployees has: id, name, designation, mobile, email
-        // users schema has: id, name, email, designation, mobile, role, etc.
+        // 3. Seed Admins
+        console.log('... Seeding Admins');
+        const adminPasswordHash = await bcrypt.hash("admin123", 10);
+        for (const admin of mockAdmins) {
+            await db.insert(users).values({
+                id: admin.id,
+                name: admin.name,
+                email: admin.email,
+                designation: admin.designation,
+                mobile: admin.mobile,
+                role: 'admin',
+                passwordHash: adminPasswordHash,
+                employeeCode: `ADM${admin.id.split('-')[1].padStart(3, '0')}`,
+            }).onConflictDoNothing();
+        }
 
-        // Default password hash for "password123" (approximate)
-        // In real app we would use bcrypt.hash("password123", 10)
-        const defaultPasswordHash = "$2a$10$abcdefghijklmnopqrstuvwxyz123456";
+        // 4. Seed Users (Employees)
+        console.log('... Seeding Employees');
+        const defaultPasswordHash = await bcrypt.hash("password123", 10);
 
         for (const emp of mockEmployees) {
             await db.insert(users).values({
@@ -47,11 +56,22 @@ async function seed() {
                 name: emp.name,
                 email: emp.email,
                 designation: emp.designation,
+                department: emp.department,
+                location: emp.location,
                 mobile: emp.mobile,
+                whatsapp: emp.whatsapp,
                 role: 'employee',
                 passwordHash: defaultPasswordHash,
                 employeeCode: `EMP${emp.id.padStart(3, '0')}`,
-            }).onConflictDoNothing();
+            }).onConflictDoUpdate({
+                target: users.id,
+                set: {
+                    department: emp.department,
+                    location: emp.location,
+                    whatsapp: emp.whatsapp,
+                    designation: emp.designation,
+                }
+            });
         }
 
         console.log('✅ Database seeded successfully!');

@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Phone, Mail, Loader2, UserCircle } from "lucide-react";
+import { Search, Phone, Mail, Loader2, UserCircle, MessageSquare, MapPin, Building2, Edit2 } from "lucide-react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 interface Employee {
     id: string;
@@ -13,9 +14,13 @@ interface Employee {
     designation: string;
     email: string;
     mobile: string;
+    whatsapp: string;
+    department: string;
+    location: string;
 }
 
 export default function DirectoryPage() {
+    const { data: session } = useSession();
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [filtered, setFiltered] = useState<Employee[]>([]);
     const [query, setQuery] = useState("");
@@ -44,13 +49,13 @@ export default function DirectoryPage() {
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-50 p-6">
+        <div className="flex flex-col min-h-[calc(100vh-64px)] bg-gray-50 p-6">
             <div className="mb-6">
-                <Link href="/dashboard" className="text-sm text-gray-500 hover:underline mb-2 block">
+                <Link href="/dashboard" className="inline-flex items-center text-sm font-bold text-primary hover:text-primary/80 transition-colors mb-4">
                     &larr; Back to Dashboard
                 </Link>
-                <h1 className="text-3xl font-bold text-gray-900">Employee Directory</h1>
-                <p className="text-gray-500">Find and contact your colleagues.</p>
+                <h1 className="text-4xl font-black text-gray-900 tracking-tight">Employee Directory</h1>
+                <p className="text-gray-500 text-lg">Find and contact your colleagues.</p>
             </div>
 
             <div className="mb-6 relative">
@@ -78,23 +83,41 @@ export default function DirectoryPage() {
                                         <UserCircle className="h-full w-full text-gray-300" />
                                     </div>
                                     <div className="mt-3">
-                                        <h3 className="font-bold text-lg text-gray-900">{emp.name}</h3>
-                                        <p className="text-sm text-blue-600 font-medium">{emp.designation}</p>
+                                        <h3 className="font-bold text-lg text-gray-900 leading-tight">{emp.name}</h3>
+                                        <p className="text-sm text-primary font-bold">{emp.designation}</p>
+                                        <div className="mt-2 space-y-1">
+                                            <div className="flex items-center text-xs text-gray-500 font-medium">
+                                                <Building2 className="h-3 w-3 mr-1" /> {emp.department || "General"}
+                                            </div>
+                                            <div className="flex items-center text-xs text-gray-500 font-medium">
+                                                <MapPin className="h-3 w-3 mr-1" /> {emp.location || "Office"}
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <div className="mt-6 flex space-x-3">
-                                        <Button className="flex-1 bg-green-600 hover:bg-green-700" size="sm" asChild>
+                                    <div className="mt-6 grid grid-cols-4 gap-2">
+                                        <Button className="bg-green-600 hover:bg-green-700 h-10 px-0" size="sm" asChild title="Call">
                                             <a href={`tel:${emp.mobile}`}>
-                                                <Phone className="h-3 w-3 mr-2" />
-                                                Call
+                                                <Phone className="h-4 w-4" />
                                             </a>
                                         </Button>
-                                        <Button className="flex-1" variant="outline" size="sm" asChild>
+                                        <Button className="bg-[#25D366] hover:bg-[#128C7E] h-10 px-0" size="sm" asChild title="WhatsApp">
+                                            <a href={`https://wa.me/${emp.whatsapp?.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
+                                                <MessageSquare className="h-4 w-4" />
+                                            </a>
+                                        </Button>
+                                        <Button variant="outline" className="h-10 px-0 hover:bg-red-50 hover:text-red-600 hover:border-red-200" size="sm" asChild title="Email">
                                             <a href={`mailto:${emp.email}`}>
-                                                <Mail className="h-3 w-3 mr-2" />
-                                                Email
+                                                <Mail className="h-4 w-4" />
                                             </a>
                                         </Button>
+                                        {(session?.user as any)?.role === "admin" && (
+                                            <Button variant="ghost" className="h-10 px-0 hover:bg-blue-50 hover:text-blue-600 border border-transparent hover:border-blue-200" size="sm" asChild title="Edit Employee">
+                                                <Link href={`/dashboard/admin/employees?edit=${emp.id}`}>
+                                                    <Edit2 className="h-4 w-4" />
+                                                </Link>
+                                            </Button>
+                                        )}
                                     </div>
                                 </div>
                             </CardContent>
