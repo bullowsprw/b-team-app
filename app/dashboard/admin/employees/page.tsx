@@ -1,8 +1,6 @@
-export const dynamic = 'force-dynamic';
-
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,7 +35,7 @@ interface Employee {
     location: string;
 }
 
-export default function AdminEmployeesPage() {
+function AdminEmployeesContent() {
     const searchParams = useSearchParams();
     const editId = searchParams.get("edit");
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -345,5 +343,13 @@ export default function AdminEmployeesPage() {
                 </div>
             )}
         </div>
+    );
+}
+
+export default function AdminEmployeesPage() {
+    return (
+        <Suspense fallback={<div className="flex justify-center items-center min-h-[calc(100vh-64px)] bg-gray-50"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div></div>}>
+            <AdminEmployeesContent />
+        </Suspense>
     );
 }
