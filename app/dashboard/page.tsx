@@ -1,13 +1,24 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Calendar, LifeBuoy, Megaphone, Users, ShieldCheck, Settings, Ticket } from "lucide-react";
+import { FileText, Calendar, LifeBuoy, Users, ShieldCheck, Settings, Ticket, PlayCircle, Info } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { useSession } from "next-auth/react";
+import { Button } from "@/components/ui/button";
 
 export default function DashboardPage() {
     const { data: session } = useSession();
+    const [news, setNews] = useState<any[]>([]);
+
+    useEffect(() => {
+        fetch("/api/news")
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data)) setNews(data.slice(0, 3)); // Show top 3
+            })
+            .catch(console.error);
+    }, []);
 
     const features = [
         {
@@ -38,25 +49,53 @@ export default function DashboardPage() {
             color: "text-orange-600",
             bgColor: "bg-orange-100",
         },
-        {
-            title: "News",
-            icon: Megaphone,
-            href: "#", // Placeholder for Phase 2
-            color: "text-red-600",
-            bgColor: "bg-red-100",
-        },
     ];
 
     return (
         <div className="flex flex-col min-h-[calc(100vh-64px)] bg-gray-50">
             {/* Main Content */}
             <main className="flex-1 p-6">
-                <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800">
-                        Good Morning, {session?.user?.name?.split(" ")[0] || "Team"}
-                    </h2>
-                    <p className="text-gray-500">Here is what's happening today.</p>
+                {/* Header with Ext Links */}
+                <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div>
+                        <h2 className="text-2xl font-bold text-gray-800">
+                            Good Morning, {session?.user?.name?.split(" ")[0] || "Team"}
+                        </h2>
+                        <p className="text-gray-500">Here is what's happening today.</p>
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                        <Link href="https://www.youtube.com/@BullowsPaintEquipment" target="_blank">
+                            <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50 gap-2">
+                                <PlayCircle className="h-4 w-4" />
+                                Subscribe
+                            </Button>
+                        </Link>
+                        <Link href="https://youtu.be/h7ZmqpnolbU?si=2wNu45kV-UGZp9f5" target="_blank">
+                            <Button variant="outline" className="text-blue-600 border-blue-200 hover:bg-blue-50 gap-2">
+                                <Info className="h-4 w-4" />
+                                About Bullows
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
+
+                {/* News Feed */}
+                {news.length > 0 && (
+                    <div className="mb-8">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-3">Latest Announcements</h3>
+                        <div className="grid gap-4 md:grid-cols-3">
+                            {news.map((item) => (
+                                <Card key={item.id} className="bg-white border-l-4 border-l-blue-500 shadow-sm">
+                                    <div className="p-4">
+                                        <h4 className="font-bold text-gray-900 line-clamp-1">{item.title}</h4>
+                                        <p className="text-gray-600 text-sm mt-1 line-clamp-2">{item.content}</p>
+                                        <p className="text-[10px] text-gray-400 mt-2">{new Date(item.date).toLocaleDateString()}</p>
+                                    </div>
+                                </Card>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {/* Admin Section (Only for Admins) */}
                 {(session?.user as any)?.role === "admin" && (

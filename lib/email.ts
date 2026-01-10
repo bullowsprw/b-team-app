@@ -98,3 +98,37 @@ export async function sendTicketNotification(data: TicketEmailData): Promise<boo
         return false;
     }
 }
+
+
+export async function sendOtpEmail(email: string, otp: string): Promise<boolean> {
+    // Simulation
+    if (!process.env.RESEND_API_KEY) {
+        console.log(`[OTP SIMULATION]`);
+        console.log(`To: ${email}`);
+        console.log(`Code: ${otp}`);
+        return true;
+    }
+
+    try {
+        const { error } = await resend.emails.send({
+            from: 'B Team Security <noreply@bullows.com>',
+            to: email,
+            subject: `[B Team] Your Verification Code: ${otp}`,
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                    <h2 style="color: #333;">Verify Your Email</h2>
+                    <p>Use the following One-Time Password (OTP) to complete your registration:</p>
+                    <div style="background: #f4f4f5; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
+                        <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #000;">${otp}</span>
+                    </div>
+                    <p style="color: #666; font-size: 14px;">This code will expire in 10 minutes.</p>
+                </div>
+            `,
+        });
+        if (error) { console.error(error); return false; }
+        return true;
+    } catch (error) {
+        console.error('Email sending error:', error);
+        return false;
+    }
+}
